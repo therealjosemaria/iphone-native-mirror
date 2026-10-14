@@ -6,6 +6,7 @@ import { VideoGate } from './video.js';
 import { ReadinessGuard } from './readiness.js';
 import { prepareTailscale } from './tailscale.js';
 import { AirPlayEvents } from './airplay-events.js';
+import { NetworkMonitor } from './network-monitor.js';
 
 const host = process.env.IPHONE_HOST;
 if (!host) throw new Error('Set IPHONE_HOST to the iPhone LAN or Tailscale address');
@@ -18,6 +19,14 @@ const receiverReadiness = new ReadinessGuard(() => failSession('iPhone receiver 
   timeoutMs: Number(process.env.MIRROR_HELLO_TIMEOUT_MS || 3000),
 });
 let stopping = false, active = false, socket, retry, heartbeat, ready = false, generation = 0, preflightPending = false;
+const networkMonitor = new NetworkMonitor({
+  isActive: () => active || stopping,
+  onRefresh: () => {
+    console.error('AIRPLAY-NETWORK changed or resumed; refreshing discovery');
+    stop(); // launchd restarts the service with fresh addresses and multicast memberships.
+  },
+});
+networkMonitor.start();
 let preflightRefusals = 0;
 const displayEvents = new AirPlayEvents({
   width: Number(process.env.MIRROR_WIDTH || 1288), height: Number(process.env.MIRROR_HEIGHT || 2796),
@@ -161,6 +170,7 @@ function disconnectPhone() {
   receiver.stdout.resume();
 }
 function stop() {
+  networkMonitor.close();
   stopping = true; active = false;
   generation++;
   readiness.stop();

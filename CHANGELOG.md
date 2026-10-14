@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.12 — 2026-10-15
+
+- Refresh native discovery automatically after network address changes or waking
+  from sleep, once addresses have settled for at least three seconds.
+- Defer discovery recovery until the current iPhone session ends.
+- Add deterministic tests for network changes, settling, sleep and active sessions.
+- Document the confirmed simultaneous-display workaround: connect iPad Sidecar
+  first, then iPhone AirPlay. Starting Sidecar second was rejected by macOS.
+
 ## 0.0.11 — 2026-10-14
 
 - Follow iPhone orientation changes through existing receiver hello updates.

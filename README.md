@@ -24,7 +24,7 @@ brew install cmake pkgconf libplist openssl@3
 git clone https://github.com/therealjosemaria/iphone-native-mirror.git
 cd iphone-native-mirror
 npm pack
-IPHONE_HOST=<iPhone-address> npm install --global ./iphone-native-mirror-0.0.11.tgz --foreground-scripts
+IPHONE_HOST=<iPhone-address> npm install --global ./iphone-native-mirror-0.0.12.tgz --foreground-scripts
 ```
 
 The Homebrew command installs native build dependencies; `git clone` downloads
@@ -36,6 +36,20 @@ phone address and registers the login service. Later installs reuse that address
 Daily use needs no terminal: open OpenDisplay on the iPhone and select **iPhone**
 from native Screen Mirroring. Use **extended display** for a tall portrait desktop.
 Mirroring a landscape Mac screen leaves unused space unless cropped or stretched.
+
+### Using an iPad and iPhone together
+
+**Connect the iPad through Sidecar first, then connect the iPhone.**
+On the tested Mac, starting Sidecar after the iPhone produces the macOS error
+“Sidecar is not available while AirPlay screen is active.” If this happens,
+disconnect the iPhone, connect the iPad, then reconnect the iPhone.
+The user confirmed both displays work together in this order on 15 October 2026.
+This is a verified workaround on that setup; other Mac configurations may differ.
+
+Discovery automatically refreshes after network address changes or waking from
+sleep, once the network settles. Refresh waits until any active iPhone session
+ends. Recovery logic is covered by automated tests; a real network switch has
+not yet been verified with this version.
 
 ## Verified on 14 October 2026
 
