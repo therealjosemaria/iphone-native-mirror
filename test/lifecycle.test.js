@@ -49,6 +49,9 @@ test('AirPlay disconnect closes the phone session, stays idle, and reconnects on
     await until(() => videos.length === 1);
     assert.ok(log.indexOf('IPHONE-READY') < log.indexOf('FIXTURE-STREAM-STARTED'), 'AirPlay starts only after the phone handshake');
     assert.equal(videos[0][4] & 31, 7, 'Startup video retains SPS before the first IDR');
+    connections[0].write(frame({ type: 'hello', pv: 3, pixelsWide: 2796, pixelsHigh: 1290 }));
+    await delay(100);
+    assert.equal(welcomes.length, 1, 'Rotation hello must not restart the protocol handshake');
     const closed = once(connections[0], 'close');
     writeFileSync(control, 'false'); await closed;
     await delay(3200); assert.equal(connections.length, 1, 'Disconnect must cancel phone retries');

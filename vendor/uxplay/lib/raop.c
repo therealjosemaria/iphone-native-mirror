@@ -57,6 +57,7 @@ struct raop_s {
 
     /* local network ports */  
     unsigned short port;
+    unsigned short event_port;
     unsigned short timing_lport;
     unsigned short control_lport;
     unsigned short data_lport;
@@ -746,6 +747,11 @@ raop_set_log_level(raop_t *raop, int level) {
 }
 
 int raop_set_plist(raop_t *raop, const char *plist_item, const int value) {
+    if (!strcmp(plist_item, "eventPort")) {
+        if (value < 0 || value > 65535) return -1;
+        raop->event_port = (unsigned short)value;
+        return 0;
+    }
     int retval = 0;
     assert(raop);
     assert(plist_item);

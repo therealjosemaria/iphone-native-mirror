@@ -24,7 +24,7 @@ brew install cmake pkgconf libplist openssl@3
 git clone https://github.com/therealjosemaria/iphone-native-mirror.git
 cd iphone-native-mirror
 npm pack
-IPHONE_HOST=<iPhone-address> npm install --global ./iphone-native-mirror-0.0.10.tgz --foreground-scripts
+IPHONE_HOST=<iPhone-address> npm install --global ./iphone-native-mirror-0.0.11.tgz --foreground-scripts
 ```
 
 The Homebrew command installs native build dependencies; `git clone` downloads
@@ -47,7 +47,8 @@ Mirroring a landscape Mac screen leaves unused space unless cropped or stretched
   video; phone samples reached 53–57 FPS, with variable stalls.
 - macOS reports an AirPlay virtual extended display. Its logical desktop mode
   was 664×1440, which differs from the encoded video raster.
-- Twenty tests passed, including a real RTSP capability handshake, acceptance and rejection of
+- Twenty-three tests passed, including live rotation event framing, debounce,
+  reverse rotation, disconnect cleanup, a real RTSP capability handshake, acceptance and rejection of
   SETUP according to phone preflight, portrait
   dimensions, framing, keyframe recovery, session lifecycle, readiness failure
   teardown, conditional Tailscale login and plist validation. Signed-out Tailscale
@@ -119,8 +120,18 @@ Native tests require local networking. `-DMIRROR_INTERNAL_MDNS=OFF` builds the
 comparison Bonjour backend, which did not appear in this Mac's native picker.
 `native/inspect-discovery.m` is a read-only runtime diagnostic.
 
-Video only: no forwarded audio or phone touch input. H.264 only. Keyframe requests
-wait for the next AirPlay IDR. Phone rotation does not reconfigure the display.
+Video only: no forwarded audio or phone touch input. H.264 only. Phone keyframe
+requests are forwarded through the AirPlay event channel when available.
+The phone's rotation hello updates now reconfigure the AirPlay display through
+`updateDisplayInfo`, without reopening the phone connection or restarting AirPlay.
+Repeated updates are debounced by 300 ms. The iPhone app must allow interface
+rotation (disable Portrait Orientation Lock). Native Screen Mirroring should use
+Extended Display; duplicating the laptop cannot create an independent wide/tall desktop.
+The event listener accepts only same-Mac connections, matching the media receiver.
+An isolated live test changed the encoded video from 1288×2794 to 2794×1288 and
+the user confirmed landscape fills the phone. On installed v0.0.11, the user
+confirmed automatic switching fills the phone in both landscape and portrait
+without disconnecting or reconnecting.
 The installed receiver accepts AirPlay only when the source address matches the
 Mac's destination address. This is a personal prototype: multiple installed Macs
 currently need distinct device IDs and hostnames. Automatic login startup is

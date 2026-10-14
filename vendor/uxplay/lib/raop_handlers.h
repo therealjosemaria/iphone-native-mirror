@@ -936,8 +936,8 @@ raop_handler_setup(raop_conn_t *conn,
         conn->raop_rtp_mirror = raop_rtp_mirror_init(raop->logger, &raop->callbacks,
                                                      conn->raop_ntp, remote, conn->remotelen, aeskey);
 
-        /* the event port is not used in mirror mode or audio mode */
-        unsigned short event_port = 0;
+        /* Optional same-Mac event channel for display updates and keyframe requests. */
+        unsigned short event_port = raop->event_port;
         plist_t res_event_port_node = plist_new_uint(event_port);
         plist_t res_timing_port_node = plist_new_uint(timing_lport);
         plist_dict_set_item(res_root_node, "timingPort", res_timing_port_node);

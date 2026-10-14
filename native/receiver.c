@@ -114,6 +114,13 @@ int main(int argc, char **argv) {
     raop_set_plist(raop, "width", dimension("MIRROR_WIDTH", 1288));
     raop_set_plist(raop, "height", dimension("MIRROR_HEIGHT", 2796));
     raop_set_plist(raop, "maxFPS", 60);
+    const char *event_port = getenv("MIRROR_EVENT_PORT");
+    if (event_port) {
+        char *end = NULL;
+        long value = strtol(event_port, &end, 10);
+        if (!*event_port || *end || value < 1 || value > 65535) return 1;
+        raop_set_plist(raop, "eventPort", (int)value);
+    }
     unsigned short tcp[2] = {0}, udp[3] = {0}, port = 0;
     raop_set_tcp_ports(raop, tcp); raop_set_udp_ports(raop, udp);
     if (raop_start_httpd(raop, &port) < 0) return 1;

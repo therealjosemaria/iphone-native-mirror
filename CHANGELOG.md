@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.0.11 — 2026-10-14
+
+- Follow iPhone orientation changes through existing receiver hello updates.
+- Resize the native AirPlay display using the `updateDisplayInfo` event, keeping
+  the phone session open and debouncing repeated updates by 300 ms.
+- Forward phone keyframe requests using AirPlay's `forceKeyFrame` event.
+- Restrict the new event endpoint to same-Mac connections and close it on teardown.
+- Add tests for panel validation, RTSP/plist encoding, reverse rotation, duplicate
+  updates and session cleanup. Twenty-three tests pass.
+
+Live prototype: the user confirmed a full-width landscape desktop, with AirPlay
+video changing from 1288×2794 to 2794×1288. On installed v0.0.11, the user also
+confirmed automatic resizing fills the phone in both portrait and landscape
+without reconnecting.
+
 ## 0.0.10 — 2026-10-14
 
 First public release of the native macOS Screen Mirroring bridge for the

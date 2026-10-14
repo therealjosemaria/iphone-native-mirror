@@ -5,6 +5,7 @@ import { Decoder, frame } from './protocol.js';
 import { VideoGate } from './video.js';
 import { ReadinessGuard } from './readiness.js';
 import { prepareTailscale } from './tailscale.js';
+import { AirPlayEvents } from './airplay-events.js';
 
 const host = process.env.IPHONE_HOST;
 if (!host) throw new Error('Set IPHONE_HOST to the iPhone LAN or Tailscale address');
@@ -18,11 +19,21 @@ const receiverReadiness = new ReadinessGuard(() => failSession('iPhone receiver 
 });
 let stopping = false, active = false, socket, retry, heartbeat, ready = false, generation = 0, preflightPending = false;
 let preflightRefusals = 0;
+const displayEvents = new AirPlayEvents({
+  width: Number(process.env.MIRROR_WIDTH || 1288), height: Number(process.env.MIRROR_HEIGHT || 2796),
+  onChange: size => {
+    gate.reset(); pendingVideo = []; pendingBytes = 0;
+    console.error('AIRPLAY-ORIENTATION', `${size.width}x${size.height}`);
+  },
+  onError: reason => console.error('AIRPLAY-EVENT-CHANNEL:', reason),
+});
+const eventPort = await displayEvents.start();
 const receiver = spawn(binary, [process.env.MIRROR_NAME || 'iPhone Mirror'], {
-  stdio: ['ignore', 'pipe', 'inherit', 'pipe', 'pipe'], env: { ...process.env, MIRROR_EVENTS: '1' },
+  stdio: ['ignore', 'pipe', 'inherit', 'pipe', 'pipe'], env: { ...process.env, MIRROR_EVENTS: '1', MIRROR_EVENT_PORT: String(eventPort) },
 });
 const sessionDecoder = new Decoder(body => {
   const message = JSON.parse(body.toString());
+  if (message.active === true) displayEvents.setActive(true);
   if (message.preflight === true) {
     preflightPending = true;
     if (ready) { approvePreflight(); return; }
@@ -38,6 +49,7 @@ const sessionDecoder = new Decoder(body => {
       connect();
     }).catch(() => { if (session === generation) failSession('Tailscale setup required', 'tailscale'); });
   } else if (message.active === false && active) {
+    displayEvents.setActive(false);
     active = false;
     generation++;
     readiness.stop();
@@ -91,7 +103,9 @@ function connect() {
   connection.setTimeout(8000, () => connection.destroy(new Error('iPhone silent')));
   const decoder = new Decoder(payload => {
     const message = JSON.parse(payload.toString());
-    if (message.type === 'hello' && !ready) {
+    if (message.type === 'hello') {
+      displayEvents.observeHello(message);
+      if (ready) return; // Rotation re-sends hello; keep the existing session and heartbeat.
       if ((message.pv ?? 1) > 3) throw new Error('Unsupported receiver protocol');
       ready = true;
       handshaken = true;
@@ -112,7 +126,7 @@ function connect() {
       readiness.observe(message);
       console.error('PHONE-STATS', JSON.stringify(message));
     }
-    else if (message.type === 'kf') { gate.reset(); console.error('PHONE-KF: awaiting next AirPlay IDR'); }
+    else if (message.type === 'kf') { gate.reset(); displayEvents.requestKeyframe(); console.error('PHONE-KF: requested AirPlay IDR'); }
     else if (message.type === 'closing' || message.type === 'sleeping') failSession('iPhone receiver closed or locked');
   });
   connection.on('data', data => {
@@ -151,6 +165,7 @@ function stop() {
   generation++;
   readiness.stop();
   receiverReadiness.stop();
+  displayEvents.close();
   const rejectPreflight = preflightPending;
   disconnectPhone();
   // Wake the native approval wait before shutdown joins its request thread.
