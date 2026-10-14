@@ -1,0 +1,2 @@
+# Preserve vendored source formatting and check whitespace in our own code.
+vendor/uxplay/lib/** -whitespace
