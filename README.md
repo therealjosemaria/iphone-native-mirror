@@ -13,7 +13,7 @@ After the one-time installation:
 
 ## Demo
 
-[![Watch the iPhone Native Mirror demo](docs/assets/demo.jpg)](https://therealjosemaria.github.io/iphone-native-mirror/)
+[![Animated preview of iPhone Native Mirror — click to watch the full demo](docs/assets/demo.gif)](https://therealjosemaria.github.io/iphone-native-mirror/)
 
 [Watch the 49-second demo in your browser](https://therealjosemaria.github.io/iphone-native-mirror/)
 — silent video showing the Mac and iPhone in use. No file download required.
