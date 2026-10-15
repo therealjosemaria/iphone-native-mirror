@@ -3,6 +3,14 @@
 Install once with npm. Open OpenDisplay on the iPhone, then select **iPhone** in
 macOS **Screen Mirroring**. Mac OpenDisplay is not required.
 
+## Daily use
+
+After the one-time installation:
+
+1. Open **OpenDisplay** on the iPhone and keep it visible.
+2. Click **iPhone** in the Mac's **Screen Mirroring** menu.
+3. Done — your iPhone is now a Mac display.
+
 ## Demo
 
 [![Watch the iPhone Native Mirror demo](docs/assets/demo.jpg)](https://github.com/therealjosemaria/iphone-native-mirror/blob/main/docs/assets/demo.mp4)
