@@ -3,6 +3,13 @@
 Install once with npm. Open OpenDisplay on the iPhone, then select **iPhone** in
 macOS **Screen Mirroring**. Mac OpenDisplay is not required.
 
+## Demo
+
+[![Watch the iPhone Native Mirror demo](docs/assets/demo.jpg)](https://github.com/therealjosemaria/iphone-native-mirror/blob/main/docs/assets/demo.mp4)
+
+[Watch the 49-second demo](https://github.com/therealjosemaria/iphone-native-mirror/blob/main/docs/assets/demo.mp4)
+— silent video showing the Mac and iPhone in use.
+
 The background service receives native AirPlay and forwards H.264 to the phone.
 A user LaunchAgent starts it at login and restarts it if it exits. Use a reachable
 local IP address on a shared network, or a Tailscale address on restrictive networks.
