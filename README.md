@@ -13,10 +13,10 @@ After the one-time installation:
 
 ## Demo
 
-[![Watch the iPhone Native Mirror demo](docs/assets/demo.jpg)](https://github.com/therealjosemaria/iphone-native-mirror/blob/main/docs/assets/demo.mp4)
+[![Watch the iPhone Native Mirror demo](docs/assets/demo.jpg)](https://therealjosemaria.github.io/iphone-native-mirror/)
 
-[Watch the 49-second demo](https://github.com/therealjosemaria/iphone-native-mirror/blob/main/docs/assets/demo.mp4)
-— silent video showing the Mac and iPhone in use.
+[Watch the 49-second demo in your browser](https://therealjosemaria.github.io/iphone-native-mirror/)
+— silent video showing the Mac and iPhone in use. No file download required.
 
 The background service receives native AirPlay and forwards H.264 to the phone.
 A user LaunchAgent starts it at login and restarts it if it exits. Use a reachable
